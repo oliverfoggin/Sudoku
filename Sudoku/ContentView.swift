@@ -30,8 +30,8 @@ struct ContentView: View {
 				selectedCells.map(pathForCell(cell:))
 					.map { $0.applying(transform) }
 					.forEach {
-//						context.fill($0, with: .color(.purple.opacity(0.7)))
-						context.stroke($0, with: .color(.purple.opacity(0.7)), style: .init(lineWidth: 6, lineJoin: .round))
+						context.fill($0, with: .color(.purple.opacity(0.7)))
+//						context.stroke($0, with: .color(.purple.opacity(0.7)), lineWidth: 6)
 					}
 
 				var boxPath = Path()
@@ -53,7 +53,7 @@ struct ContentView: View {
 				boxPath.move(to: CGPoint(x: 1, y: 2 * boxSize))
 				boxPath.addLine(to: CGPoint(x: gridSize - 1, y: 2 * boxSize))
 
-				context.stroke(boxPath, with: .color(.black), style: .init(lineWidth: 2))
+				context.stroke(boxPath, with: .color(.black), lineWidth: 2)
 
 				var cellPath = Path()
 				cellPath.move(to: CGPoint(x: cellSize, y: 1))
@@ -82,7 +82,7 @@ struct ContentView: View {
 				cellPath.move(to: CGPoint(x: 1, y: 8 * cellSize))
 				cellPath.addLine(to: CGPoint(x: gridSize - 1, y: 8 * cellSize))
 
-				context.stroke(cellPath, with: .color(Color(white: 0.2)), style: .init(lineWidth: 0.5))
+				context.stroke(cellPath, with: .color(Color(white: 0.2)), lineWidth: 0.5)
 			}
 			.gesture(tapGesture)
 			.frame(width: gridSize, height: gridSize, alignment: .center)
