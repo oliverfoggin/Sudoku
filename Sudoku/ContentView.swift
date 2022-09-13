@@ -10,6 +10,11 @@ struct ContentView: View {
 		72 : .blue,
 	]
 
+	let fixedNumbers: [Int: Int] = [
+		2: 8,
+		17: 4,
+	]
+
 	@State var bigNumbers: [Int: Int] = [
 		0: 9,
 		52: 1,
@@ -120,7 +125,24 @@ struct ContentView: View {
 
 					context.stroke(cellPath, with: .color(Color(white: 0.2)), lineWidth: 0.5)
 
-					bigNumbers.forEach { cell, value in
+					fixedNumbers.forEach { cell, value in
+						let point = pointForCell(cell: cell)
+							.applying(.init(translationX: cellSize * 0.5, y: cellSize * 0.5))
+
+						context.draw(
+							Text("\(value)")
+								.font(.title)
+								.fontWeight(.bold)
+								.foregroundColor(.init(white: 0.4)),
+							at: point
+						)
+					}
+
+					bigNumbers
+						.filter { cell, _ in
+							!fixedNumbers.keys.contains(cell)
+						}
+						.forEach { cell, value in
 						let point = pointForCell(cell: cell)
 							.applying(.init(translationX: cellSize * 0.5, y: cellSize * 0.5))
 
@@ -133,7 +155,8 @@ struct ContentView: View {
 
 					centerNumbers
 						.filter { cell, _ in
-							!bigNumbers.keys.contains(cell)
+							!bigNumbers.keys.contains(cell) &&
+							!fixedNumbers.keys.contains(cell)
 						}
 						.forEach { cell, values in
 							let point = pointForCell(cell: cell)
