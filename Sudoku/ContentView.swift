@@ -79,19 +79,11 @@ struct ContentView: View {
 						context.fill(cellPath, with: .color(color.opacity(0.7)))
 					}
 
-					pathFor(cells: selectedCells).forEach { path in
-						let color = Color.init(
-							red: .random(in: 0..<1),
-							green: .random(in: 0..<1),
-							blue: .random(in: 0..<1)
-						)
-
-						context.stroke(
-							path,
-							with: .color(color),
-							lineWidth: 6
-						)
-					}
+					context.stroke(
+						pathFor(cells: selectedCells),
+						with: .color(.purple.opacity(0.5)),
+						lineWidth: 6
+					)
 
 					var boxPath = Path()
 					boxPath.addLines([
@@ -358,7 +350,7 @@ struct ContentView: View {
 			.applying(cellSpaceToPointSpace)
 	}
 
-	func pathFor(cells: Set<Int>) -> [Path] {
+	func pathFor(cells: Set<Int>) -> Path {
 		var openCells = cells
 
 		var cellGroups: [[Int]] = []
@@ -379,36 +371,52 @@ struct ContentView: View {
 			cellGroups.append(group)
 		}
 
-		var paths: [Path] = []
+		var path = Path()
 
 		cellGroups.forEach { group in
-			var path = Path()
-
-			group.map(pointForCell(cell:))
-				.forEach {
-					path.addPath(
-						Path(CGRect(
-							origin: $0, //.applying(.init(translationX: 3, y: 3)),
-							size: CGSize(width: cellSize, height: cellSize)
-						))
-					)
-				}
+			var subPath = Path()
 
 			group.forEach { cell in
-
+				let origin = pointForCell(cell: cell)
+				Direction.allCases.forEach { direction in
+					let neighbour = cell + direction.rawValue
+					if !group.contains([neighbour]) {
+						switch direction {
+						case .left:
+							path.move(to: origin)
+							path.addLine(to: origin.applying(.init(translationX: 0, y: cellSize)))
+						case .up:
+							path.move(to: origin)
+							path.addLine(to: origin.applying(.init(translationX: cellSize, y: 0)))
+						case .down:
+							path.move(to: origin.applying(.init(translationX: 0, y: cellSize)))
+							path.addLine(to: origin.applying(.init(translationX: cellSize, y: cellSize)))
+						case .right:
+							path.move(to: origin.applying(.init(translationX: cellSize, y: 0)))
+							path.addLine(to: origin.applying(.init(translationX: cellSize, y: cellSize)))
+						}
+					}
+				}
 			}
 
-			paths.append(path)
+			path.addPath(subPath)
 		}
 
-		return paths
+		return path
+	}
+
+	enum Direction: Int, CaseIterable {
+		case up = -9
+		case down = 9
+		case left = -1
+		case right = 1
 	}
 
 	func neighbours(of cell: Int, in openCells: inout Set<Int>, neighbours: inout [Int]) {
 		var nextCells: [Int] = []
 
-		[-9, -1, 1, 9].forEach { diff in
-			let neighbour = cell + diff
+		Direction.allCases.forEach { diff in
+			let neighbour = cell + diff.rawValue
 
 			if openCells.contains(neighbour) {
 				openCells.remove(neighbour)
