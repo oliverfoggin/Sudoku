@@ -240,6 +240,10 @@ struct ContentView: View {
 				ForEach(1..<10) { value in
 					Button {
 						selectedCells.forEach { cell in
+							guard fixedNumbers[cell] == nil else {
+								return
+							}
+							
 							switch entryMode {
 							case .big:
 								if bigNumbers[cell] == value {
@@ -374,8 +378,6 @@ struct ContentView: View {
 		var path = Path()
 
 		cellGroups.forEach { group in
-			var subPath = Path()
-
 			group.forEach { cell in
 				let origin = pointForCell(cell: cell)
 				Direction.allCases.forEach { direction in
@@ -398,8 +400,6 @@ struct ContentView: View {
 					}
 				}
 			}
-
-			path.addPath(subPath)
 		}
 
 		return path
