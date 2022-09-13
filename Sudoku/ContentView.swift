@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  Sudoku
-//
-//  Created by Oliver Foggin on 12/09/2022.
-//
-
 import SwiftUI
 
 struct ContentView: View {
@@ -33,8 +26,6 @@ struct ContentView: View {
 					context.fill(Path(roundedRect: rect, cornerSize: .zero), with: .color(.white))
 
 					coloredCells.forEach { cell, color in
-						let translation = CGAffineTransformMakeTranslation(cellSize * (-0.5), cellSize * -(0.5))
-
 						let cellPath = Path(CGRect(
 							origin: pointForCell(cell: cell),
 							size: CGSize(width: cellSize, height: cellSize)
@@ -45,16 +36,13 @@ struct ContentView: View {
 
 					selectedCells.map(pointForCell(cell:))
 						.map {
-							let translation = CGAffineTransformMakeTranslation(cellSize * (-0.5), cellSize * -(0.5))
-
 							return Path(CGRect(
 								origin: $0.applying(.init(translationX: 3, y: 3)),
 								size: CGSize(width: cellSize - 6, height: cellSize - 6)
 							))
 						}
 						.forEach {
-							//						context.fill($0, with: .color(.purple.opacity(0.7)))
-							context.stroke($0, with: .color(.purple.opacity(0.7)), lineWidth: 6)
+							context.stroke($0, with: .color(.purple.opacity(0.5)), lineWidth: 6)
 						}
 
 					var boxPath = Path()
@@ -184,11 +172,3 @@ struct ContentView_Previews: PreviewProvider {
 		ContentView()
 	}
 }
-
-extension View {
-	public func continuousCornerRadius(_ radius: CGFloat) -> some View {
-		self
-			.clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
-	}
-}
-
