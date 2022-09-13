@@ -79,16 +79,19 @@ struct ContentView: View {
 						context.fill(cellPath, with: .color(color.opacity(0.7)))
 					}
 
-					selectedCells.map(pointForCell(cell:))
-						.map {
-							return Path(CGRect(
-								origin: $0.applying(.init(translationX: 3, y: 3)),
-								size: CGSize(width: cellSize - 6, height: cellSize - 6)
-							))
-						}
-						.forEach {
-							context.stroke($0, with: .color(.purple.opacity(0.5)), lineWidth: 6)
-						}
+					pathFor(cells: selectedCells).forEach { path in
+						let color = Color.init(
+							red: .random(in: 0..<1),
+							green: .random(in: 0..<1),
+							blue: .random(in: 0..<1)
+						)
+
+						context.stroke(
+							path,
+							with: .color(color),
+							lineWidth: 6
+						)
+					}
 
 					var boxPath = Path()
 					boxPath.addLines([
@@ -353,6 +356,71 @@ struct ContentView: View {
 
 		return CGPoint(x: row, y: col)
 			.applying(cellSpaceToPointSpace)
+	}
+
+	func pathFor(cells: Set<Int>) -> [Path] {
+		var openCells = cells
+
+		var cellGroups: [[Int]] = []
+
+		while !openCells.isEmpty {
+			guard let cell = openCells.popFirst() else {
+				continue
+			}
+
+			var group: [Int] = []
+
+			group.append(cell)
+
+			var nextCells: [Int] = []
+			neighbours(of: cell, in: &openCells, neighbours: &nextCells)
+			group.append(contentsOf: nextCells)
+
+			cellGroups.append(group)
+		}
+
+		var paths: [Path] = []
+
+		cellGroups.forEach { group in
+			var path = Path()
+
+			group.map(pointForCell(cell:))
+				.forEach {
+					path.addPath(
+						Path(CGRect(
+							origin: $0, //.applying(.init(translationX: 3, y: 3)),
+							size: CGSize(width: cellSize, height: cellSize)
+						))
+					)
+				}
+
+			group.forEach { cell in
+
+			}
+
+			paths.append(path)
+		}
+
+		return paths
+	}
+
+	func neighbours(of cell: Int, in openCells: inout Set<Int>, neighbours: inout [Int]) {
+		var nextCells: [Int] = []
+
+		[-9, -1, 1, 9].forEach { diff in
+			let neighbour = cell + diff
+
+			if openCells.contains(neighbour) {
+				openCells.remove(neighbour)
+				nextCells.append(neighbour)
+			}
+		}
+
+		for cell in nextCells {
+			self.neighbours(of: cell, in: &openCells, neighbours: &neighbours)
+		}
+
+		neighbours.append(contentsOf: nextCells)
 	}
 }
 
