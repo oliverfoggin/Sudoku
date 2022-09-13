@@ -35,7 +35,7 @@ struct ContentView: View {
 
 	@State var selectionMode: SelectionMode = .single
 
-	let gridSize: CGFloat = 300
+	let gridSize: CGFloat = 400
 	var cellSize: CGFloat { gridSize / 9 }
 
 	var body: some View {
