@@ -9,9 +9,10 @@ import SwiftUI
 
 @main
 struct SudokuApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
-    }
+	var body: some Scene {
+		WindowGroup {
+			ContentView()
+				.preferredColorScheme(.light)
+		}
+	}
 }

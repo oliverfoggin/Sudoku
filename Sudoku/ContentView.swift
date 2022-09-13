@@ -40,7 +40,21 @@ struct ContentView: View {
 
 	@State var selectionMode: SelectionMode = .single
 
-	let gridSize: CGFloat = 400
+	enum TouchMode: String {
+		case tap = "Tap"
+		case drag = "Drag"
+	}
+
+	@State var touchMode: TouchMode = .tap
+
+	enum DragUpdate: String {
+		case addition = "Add"
+		case remove = "Remove"
+	}
+
+	@State var dragUpdate: DragUpdate? = nil
+
+	let gridSize: CGFloat = UIScreen.main.bounds.width - 20
 	var cellSize: CGFloat { gridSize / 9 }
 
 	var body: some View {
@@ -143,15 +157,15 @@ struct ContentView: View {
 							!fixedNumbers.keys.contains(cell)
 						}
 						.forEach { cell, value in
-						let point = pointForCell(cell: cell)
-							.applying(.init(translationX: cellSize * 0.5, y: cellSize * 0.5))
+							let point = pointForCell(cell: cell)
+								.applying(.init(translationX: cellSize * 0.5, y: cellSize * 0.5))
 
-						context.draw(
-							Text("\(value)")
-								.font(.title),
-							at: point
-						)
-					}
+							context.draw(
+								Text("\(value)")
+									.font(.title),
+								at: point
+							)
+						}
 
 					centerNumbers
 						.filter { cell, _ in
@@ -169,7 +183,7 @@ struct ContentView: View {
 							)
 						}
 				}
-				.gesture(tapGesture)
+				.gesture(gestures)
 				.frame(width: gridSize, height: gridSize, alignment: .center)
 				.background(Color.white)
 
@@ -257,32 +271,60 @@ struct ContentView: View {
 					}
 				}
 			}
+
+			Text(touchMode.rawValue)
 		}
 	}
 
-	var tapGesture: some Gesture {
-		SpatialTapGesture()
-			.onEnded { value in
-				if (
-					value.location.x < 0 || gridSize < value.location.x ||
-					value.location.y < 0 || gridSize < value.location.y
-				) {
-					return
-				}
+	var gestures: some Gesture {
+		ExclusiveGesture(
+			DragGesture(minimumDistance: 3)
+				.onChanged { value in
+					touchMode = .drag
 
-				let cell = cellForPoint(point: value.location)
+					if dragUpdate == nil {
+						let startCell = cellForPoint(point: value.startLocation)
+						dragUpdate = selectedCells.contains(startCell) ? .remove : .addition
+					}
 
-				switch selectionMode {
-				case .single:
-					selectedCells = [cell]
-				case .multiple:
-					if selectedCells.contains(cell) {
+					let cell = cellForPoint(point: value.location)
+
+					switch dragUpdate {
+					case .remove:
 						selectedCells.remove(cell)
-					} else {
+					case .addition:
 						selectedCells.insert(cell)
+					case nil:
+						break
 					}
 				}
-			}
+				.onEnded { _ in
+					dragUpdate = nil
+				},
+			SpatialTapGesture()
+				.onEnded { value in
+					touchMode = .tap
+					if (
+						value.location.x < 0 || gridSize < value.location.x ||
+						value.location.y < 0 || gridSize < value.location.y
+					) {
+						return
+					}
+
+					let cell = cellForPoint(point: value.location)
+
+					switch selectionMode {
+					case .single:
+						selectedCells = [cell]
+					case .multiple:
+						if selectedCells.contains(cell) {
+							selectedCells.remove(cell)
+						} else {
+							selectedCells.insert(cell)
+						}
+					}
+				}
+		)
 	}
 
 	var cellSpaceToPointSpace: CGAffineTransform {
