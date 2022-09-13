@@ -53,6 +53,7 @@ struct ContentView: View {
 	}
 
 	@State var dragUpdate: DragUpdate? = nil
+	@State var previousDraggedCell: Int? = nil
 
 	let gridSize: CGFloat = UIScreen.main.bounds.width - 20
 	var cellSize: CGFloat { gridSize / 9 }
@@ -282,12 +283,17 @@ struct ContentView: View {
 				.onChanged { value in
 					touchMode = .drag
 
-					if dragUpdate == nil {
-						let startCell = cellForPoint(point: value.startLocation)
-						dragUpdate = selectedCells.contains(startCell) ? .remove : .addition
+					let cell = cellForPoint(point: value.location)
+
+					if cell == previousDraggedCell {
+						return
 					}
 
-					let cell = cellForPoint(point: value.location)
+					previousDraggedCell = cell
+
+					if dragUpdate == nil {
+						dragUpdate = selectedCells.contains(cell) ? .remove : .addition
+					}
 
 					switch dragUpdate {
 					case .remove:
