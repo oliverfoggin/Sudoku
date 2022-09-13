@@ -10,6 +10,31 @@ struct ContentView: View {
 		72 : .blue,
 	]
 
+	@State var bigNumbers: [Int: Int] = [
+		0: 9,
+		52: 1,
+		38: 8,
+	]
+
+	@State var centerNumbers: [Int: [Int]] = [
+		0: [1,2,3,4],
+		4: [1,4,5],
+	]
+
+	enum EntryMode: String, CaseIterable {
+		case big = "Big"
+		case center = "Center"
+	}
+
+	@State var entryMode: EntryMode = .big
+
+	enum SelectionMode: String, CaseIterable {
+		case single = "Single"
+		case multiple = "Multiple"
+	}
+
+	@State var selectionMode: SelectionMode = .single
+
 	let gridSize: CGFloat = 300
 	var cellSize: CGFloat { gridSize / 9 }
 
@@ -94,6 +119,32 @@ struct ContentView: View {
 					cellPath.addLine(to: CGPoint(x: gridSize - 1, y: 8 * cellSize))
 
 					context.stroke(cellPath, with: .color(Color(white: 0.2)), lineWidth: 0.5)
+
+					bigNumbers.forEach { cell, value in
+						let point = pointForCell(cell: cell)
+							.applying(.init(translationX: cellSize * 0.5, y: cellSize * 0.5))
+
+						context.draw(
+							Text("\(value)")
+								.font(.title),
+							at: point
+						)
+					}
+
+					centerNumbers
+						.filter { cell, _ in
+							!bigNumbers.keys.contains(cell)
+						}
+						.forEach { cell, values in
+							let point = pointForCell(cell: cell)
+								.applying(.init(translationX: cellSize * 0.5, y: cellSize * 0.5))
+
+							context.draw(
+								Text(values.map(String.init).joined())
+									.font(.caption),
+								at: point
+							)
+						}
 				}
 				.gesture(tapGesture)
 				.frame(width: gridSize, height: gridSize, alignment: .center)
@@ -120,8 +171,68 @@ struct ContentView: View {
 				}
 			}
 
+			HStack {
+				ForEach(SelectionMode.allCases, id: \.self) { value in
+					Button {
+						selectionMode = value
+					} label: {
+						Text(value.rawValue)
+							.padding(10)
+							.background(selectionMode == value ? Color.green : .gray)
+							.continuousCornerRadius(8)
+							.foregroundColor(.white)
+					}
+				}
+			}
+
 			Button("Clear selection") {
 				selectedCells = []
+			}
+
+			HStack {
+				ForEach(EntryMode.allCases, id: \.self) { value in
+					Button {
+						entryMode = value
+					} label: {
+						Text(value.rawValue)
+							.padding(10)
+							.background(entryMode == value ? Color.green : .gray)
+							.continuousCornerRadius(8)
+							.foregroundColor(.white)
+					}
+				}
+			}
+
+			HStack {
+				ForEach(1..<10) { value in
+					Button {
+						selectedCells.forEach { cell in
+							switch entryMode {
+							case .big:
+								if bigNumbers[cell] == value {
+									bigNumbers[cell] = nil
+								} else {
+									bigNumbers[cell] = value
+								}
+							case .center:
+								var values = Set(centerNumbers[cell] ?? [])
+								if values.contains(value) {
+									values.remove(value)
+								} else {
+									values.insert(value)
+								}
+								centerNumbers[cell] = values.sorted()
+							}
+						}
+					} label: {
+						Text("\(value)")
+							.frame(width: 35, height: 35)
+							.overlay {
+								RoundedRectangle(cornerRadius: 8, style: .continuous)
+									.stroke(.black, lineWidth: 1)
+							}
+					}
+				}
 			}
 		}
 	}
@@ -135,11 +246,18 @@ struct ContentView: View {
 				) {
 					return
 				}
+
 				let cell = cellForPoint(point: value.location)
-				if selectedCells.contains(cell) {
-					selectedCells.remove(cell)
-				} else {
-					selectedCells.insert(cell)
+
+				switch selectionMode {
+				case .single:
+					selectedCells = [cell]
+				case .multiple:
+					if selectedCells.contains(cell) {
+						selectedCells.remove(cell)
+					} else {
+						selectedCells.insert(cell)
+					}
 				}
 			}
 	}
