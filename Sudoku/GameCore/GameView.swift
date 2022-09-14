@@ -12,7 +12,7 @@ struct GameView: View {
 
 	var body: some View {
 		VStack {
-			GameBoard(store: store)
+			GameBoard(store: store.scope(state: \.boardState))
 
 			HStack {
 				ForEach(FillColor.allCases, id: \.self) { color in

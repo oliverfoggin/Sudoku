@@ -7,6 +7,7 @@ struct BoardState: Equatable {
 	var coloredCells: [Int: FillColor] = [:]
 	var bigNumbers: [Int: Int] = [:]
 	var centerNumbers: [Int: Set<Int>] = [:]
+	var selectedCells: Set<Int> = []
 
 	var finalNumbers: [Int: Int] {
 		bigNumbers.merging(fixedNumbers) { a, _ in a }
@@ -31,7 +32,6 @@ struct GameCore: ReducerProtocol {
 	struct State: Equatable {
 		var boardState: BoardState = .init()
 
-		var selectedCells: Set<Int> = []
 		var entryMode: EntryMode = .big
 		var selectionMode: SelectionMode = .single
 		var touchMode: TouchMode = .tap
@@ -55,11 +55,11 @@ struct GameCore: ReducerProtocol {
 		Reduce { state, action in
 			switch action {
 			case .colorTapped(let color):
-				let allColored = state.selectedCells.allSatisfy { cell in
+				let allColored = state.boardState.selectedCells.allSatisfy { cell in
 					state.boardState.coloredCells[cell] == color
 				}
 
-				state.selectedCells.forEach { cell in
+				state.boardState.selectedCells.forEach { cell in
 					if allColored {
 						state.boardState.coloredCells[cell] = nil
 					} else {
@@ -73,13 +73,13 @@ struct GameCore: ReducerProtocol {
 				return .none
 
 			case .numberTapped(let value):
-				let allCenterNumber = state.selectedCells.allSatisfy { cell in
+				let allCenterNumber = state.boardState.selectedCells.allSatisfy { cell in
 					state.boardState.centerNumbers[cell]?.contains(value) ?? false
 				}
-				let allBigNumber = state.selectedCells.allSatisfy { cell in
+				let allBigNumber = state.boardState.selectedCells.allSatisfy { cell in
 					state.boardState.finalNumbers[cell] == value
 				}
-				state.selectedCells
+				state.boardState.selectedCells
 					.filter { state.boardState.fixedNumbers[$0] == nil }
 					.forEach { cell in
 						switch state.entryMode {
@@ -112,7 +112,7 @@ struct GameCore: ReducerProtocol {
 				return .none
 
 			case .clearSelectionTapped:
-				state.selectedCells = []
+				state.boardState.selectedCells = []
 				return .none
 
 			case .cellTapped(let cell):
@@ -120,12 +120,12 @@ struct GameCore: ReducerProtocol {
 
 				switch state.selectionMode {
 				case .single:
-					state.selectedCells = [cell]
+					state.boardState.selectedCells = [cell]
 				case .multiple:
-					if state.selectedCells.contains(cell) {
-						state.selectedCells.remove(cell)
+					if state.boardState.selectedCells.contains(cell) {
+						state.boardState.selectedCells.remove(cell)
 					} else {
-						state.selectedCells.insert(cell)
+						state.boardState.selectedCells.insert(cell)
 					}
 				}
 				return .none
@@ -140,14 +140,14 @@ struct GameCore: ReducerProtocol {
 				state.previousDraggedCell = cell
 
 				if state.dragUpdate == nil {
-					state.dragUpdate = state.selectedCells.contains(cell) ? .remove : .addition
+					state.dragUpdate = state.boardState.selectedCells.contains(cell) ? .remove : .addition
 				}
 
 				switch state.dragUpdate {
 				case .remove:
-					state.selectedCells.remove(cell)
+					state.boardState.selectedCells.remove(cell)
 				case .addition:
-					state.selectedCells.insert(cell)
+					state.boardState.selectedCells.insert(cell)
 				case nil:
 					break
 				}

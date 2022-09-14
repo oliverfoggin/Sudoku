@@ -2,8 +2,8 @@ import ComposableArchitecture
 import SwiftUI
 
 struct GameBoard: View {
-	let store: StoreOf<GameCore>
-	let viewStore: ViewStoreOf<GameCore>
+	let store: Store<BoardState, GameCore.Action>
+	let viewStore: ViewStore<BoardState, GameCore.Action>
 
 	let gridSize: CGFloat = UIScreen.main.bounds.width - 20
 	var cellSize: CGFloat { gridSize / 9 }
@@ -14,7 +14,7 @@ struct GameBoard: View {
 		)
 	}
 
-	init(store: StoreOf<GameCore>) {
+	init(store: Store<BoardState, GameCore.Action>) {
 		self.store = store
 		viewStore = ViewStore(store)
 	}
@@ -28,7 +28,7 @@ struct GameBoard: View {
 
 				context.fill(Path(roundedRect: rect, cornerSize: .zero), with: .color(.white))
 
-				viewStore.boardState.coloredCells.forEach { cell, color in
+				viewStore.coloredCells.forEach { cell, color in
 					let cellPath = Path(CGRect(
 						origin: pointForCell(cell: cell),
 						size: CGSize(width: cellSize, height: cellSize)
@@ -43,7 +43,7 @@ struct GameBoard: View {
 					lineWidth: 6
 				)
 
-				viewStore.boardState.errorCells.forEach { cell in
+				viewStore.errorCells.forEach { cell in
 					let cellPath = Path(CGRect(
 						origin: pointForCell(cell: cell),
 						size: CGSize(width: cellSize, height: cellSize)
@@ -102,7 +102,7 @@ struct GameBoard: View {
 
 				context.stroke(cellPath, with: .color(Color(white: 0.2)), lineWidth: 0.5)
 
-				viewStore.boardState.fixedNumbers.forEach { cell, value in
+				viewStore.fixedNumbers.forEach { cell, value in
 					let point = pointForCell(cell: cell)
 						.applying(.init(translationX: cellSize * 0.5, y: cellSize * 0.5))
 
@@ -115,9 +115,9 @@ struct GameBoard: View {
 					)
 				}
 
-				viewStore.boardState.bigNumbers
+				viewStore.bigNumbers
 					.filter { cell, _ in
-						!viewStore.boardState.fixedNumbers.keys.contains(cell)
+						!viewStore.fixedNumbers.keys.contains(cell)
 					}
 					.forEach { cell, value in
 						let point = pointForCell(cell: cell)
@@ -130,9 +130,9 @@ struct GameBoard: View {
 						)
 					}
 
-				viewStore.boardState.centerNumbers
+				viewStore.centerNumbers
 					.filter { cell, _ in
-						!viewStore.boardState.finalNumbers.keys.contains(cell)
+						!viewStore.finalNumbers.keys.contains(cell)
 					}
 					.forEach { cell, values in
 						let point = pointForCell(cell: cell)
