@@ -12,6 +12,7 @@
 		F65D915E28D2022100B8ED7F /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = F65D915D28D2022100B8ED7F /* Dependencies */; };
 		F65D916128D2024700B8ED7F /* GameCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65D916028D2024700B8ED7F /* GameCore.swift */; };
 		F65D916328D205FF00B8ED7F /* SomeStuff.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65D916228D205FF00B8ED7F /* SomeStuff.swift */; };
+		F6E18A7128D21FFD004EF6B3 /* GameBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6E18A7028D21FFD004EF6B3 /* GameBoard.swift */; };
 		F6EE770F28CF79C700898A20 /* SudokuApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EE770E28CF79C700898A20 /* SudokuApp.swift */; };
 		F6EE771128CF79C700898A20 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EE771028CF79C700898A20 /* GameView.swift */; };
 		F6EE771328CF79C800898A20 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6EE771228CF79C800898A20 /* Assets.xcassets */; };
@@ -22,6 +23,7 @@
 		F62ACA2028D09F9E004D7CA8 /* ContinuousCornerRadius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinuousCornerRadius.swift; sourceTree = "<group>"; };
 		F65D916028D2024700B8ED7F /* GameCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCore.swift; sourceTree = "<group>"; };
 		F65D916228D205FF00B8ED7F /* SomeStuff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SomeStuff.swift; sourceTree = "<group>"; };
+		F6E18A7028D21FFD004EF6B3 /* GameBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameBoard.swift; sourceTree = "<group>"; };
 		F6EE770B28CF79C700898A20 /* Sudoku.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sudoku.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6EE770E28CF79C700898A20 /* SudokuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuApp.swift; sourceTree = "<group>"; };
 		F6EE771028CF79C700898A20 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
@@ -49,6 +51,7 @@
 				F6EE771028CF79C700898A20 /* GameView.swift */,
 				F65D916028D2024700B8ED7F /* GameCore.swift */,
 				F65D916228D205FF00B8ED7F /* SomeStuff.swift */,
+				F6E18A7028D21FFD004EF6B3 /* GameBoard.swift */,
 			);
 			path = GameCore;
 			sourceTree = "<group>";
@@ -171,6 +174,7 @@
 				F6EE771128CF79C700898A20 /* GameView.swift in Sources */,
 				F62ACA2128D09F9E004D7CA8 /* ContinuousCornerRadius.swift in Sources */,
 				F6EE770F28CF79C700898A20 /* SudokuApp.swift in Sources */,
+				F6E18A7128D21FFD004EF6B3 /* GameBoard.swift in Sources */,
 				F65D916328D205FF00B8ED7F /* SomeStuff.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

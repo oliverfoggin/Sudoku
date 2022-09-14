@@ -38,15 +38,11 @@ struct GameCore: ReducerProtocol {
 			let div = cell / 9
 			let start = 9 * div
 			let end = start + 8
-			(start...end).forEach {
-				cells.insert($0)
-			}
+			(start...end).forEach { cells.insert($0) }
 
 			boxes.filter { $0.contains(cell) }
 				.first?
-				.forEach {
-					cells.insert($0)
-				}
+				.forEach { cells.insert($0) }
 
 			cells.remove(cell)
 			return cells
@@ -105,28 +101,30 @@ struct GameCore: ReducerProtocol {
 				return .none
 
 			case .numberTapped(let value):
-				state.selectedCells.forEach { cell in
-					guard state.fixedNumbers[cell] == nil else {
-						return
-					}
-
-					switch state.entryMode {
-					case .big:
-						if state.bigNumbers[cell] == value {
-							state.bigNumbers[cell] = nil
-						} else {
-							state.bigNumbers[cell] = value
-						}
-					case .center:
-						var values = Set(state.centerNumbers[cell] ?? [])
-						if values.contains(value) {
-							values.remove(value)
-						} else {
-							values.insert(value)
-						}
-						state.centerNumbers[cell] = values.sorted()
-					}
+				let allThisNumber = state.selectedCells.allSatisfy { cell in
+					state.finalNumbers[cell] == value
 				}
+
+				state.selectedCells
+					.filter { state.fixedNumbers[$0] == nil }
+					.forEach { cell in
+						switch state.entryMode {
+						case .big:
+							if allThisNumber {
+								state.bigNumbers[cell] = nil
+							} else {
+								state.bigNumbers[cell] = value
+							}
+						case .center:
+							var values = Set(state.centerNumbers[cell] ?? [])
+							if values.contains(value) {
+								values.remove(value)
+							} else {
+								values.insert(value)
+							}
+							state.centerNumbers[cell] = values.sorted()
+						}
+					}
 				return .none
 
 			case .entryModeTapped(let mode):
