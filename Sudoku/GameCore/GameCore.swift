@@ -101,23 +101,26 @@ struct GameCore: ReducerProtocol {
 				return .none
 
 			case .numberTapped(let value):
-				let allThisNumber = state.selectedCells.allSatisfy { cell in
+				let allCenterNumber = state.selectedCells.allSatisfy { cell in
+					state.centerNumbers[cell]?.contains(value) ?? false
+				}
+				let allBigNumber = state.selectedCells.allSatisfy { cell in
 					state.finalNumbers[cell] == value
 				}
-
 				state.selectedCells
 					.filter { state.fixedNumbers[$0] == nil }
 					.forEach { cell in
 						switch state.entryMode {
 						case .big:
-							if allThisNumber {
+
+							if allBigNumber {
 								state.bigNumbers[cell] = nil
 							} else {
 								state.bigNumbers[cell] = value
 							}
 						case .center:
 							var values = Set(state.centerNumbers[cell] ?? [])
-							if values.contains(value) {
+							if allCenterNumber {
 								values.remove(value)
 							} else {
 								values.insert(value)
