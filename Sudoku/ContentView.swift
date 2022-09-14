@@ -243,7 +243,7 @@ struct ContentView: View {
 							guard fixedNumbers[cell] == nil else {
 								return
 							}
-							
+
 							switch entryMode {
 							case .big:
 								if bigNumbers[cell] == value {
