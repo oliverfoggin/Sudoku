@@ -46,6 +46,15 @@ struct GameView: View {
 						lineWidth: 6
 					)
 
+					viewStore.errorCells.forEach { cell in
+						let cellPath = Path(CGRect(
+							origin: pointForCell(cell: cell),
+							size: CGSize(width: cellSize, height: cellSize)
+						))
+						
+						context.fill(cellPath, with: .color(.red.opacity(0.5)))
+					}
+
 					var boxPath = Path()
 					boxPath.addLines([
 						CGPoint(x: 1, y: 1),
