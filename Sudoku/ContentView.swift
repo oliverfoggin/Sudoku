@@ -355,48 +355,25 @@ struct ContentView: View {
 	}
 
 	func pathFor(cells: Set<Int>) -> Path {
-		var openCells = cells
-
-		var cellGroups: [[Int]] = []
-
-		while !openCells.isEmpty {
-			guard let cell = openCells.popFirst() else {
-				continue
-			}
-
-			var group: [Int] = []
-
-			group.append(cell)
-
-			var nextCells: [Int] = []
-			neighbours(of: cell, in: &openCells, neighbours: &nextCells)
-			group.append(contentsOf: nextCells)
-
-			cellGroups.append(group)
-		}
-
 		var path = Path()
 
-		cellGroups.forEach { group in
-			group.forEach { cell in
-				let origin = pointForCell(cell: cell)
-				Direction.allCases.forEach { direction in
-					let neighbour = cell + direction.rawValue
-					if !group.contains([neighbour]) {
-						switch direction {
-						case .left:
-							path.move(to: origin)
-							path.addLine(to: origin.applying(.init(translationX: 0, y: cellSize)))
-						case .up:
-							path.move(to: origin)
-							path.addLine(to: origin.applying(.init(translationX: cellSize, y: 0)))
-						case .down:
-							path.move(to: origin.applying(.init(translationX: 0, y: cellSize)))
-							path.addLine(to: origin.applying(.init(translationX: cellSize, y: cellSize)))
-						case .right:
-							path.move(to: origin.applying(.init(translationX: cellSize, y: 0)))
-							path.addLine(to: origin.applying(.init(translationX: cellSize, y: cellSize)))
-						}
+		cells.forEach { cell in
+			let origin = pointForCell(cell: cell)
+			Direction.allCases.forEach { direction in
+				if !cells.contains(cell + direction.rawValue) {
+					switch direction {
+					case .left:
+						path.move(to: origin)
+						path.addLine(to: origin.applying(.init(translationX: 0, y: cellSize)))
+					case .up:
+						path.move(to: origin)
+						path.addLine(to: origin.applying(.init(translationX: cellSize, y: 0)))
+					case .down:
+						path.move(to: origin.applying(.init(translationX: 0, y: cellSize)))
+						path.addLine(to: origin.applying(.init(translationX: cellSize, y: cellSize)))
+					case .right:
+						path.move(to: origin.applying(.init(translationX: cellSize, y: 0)))
+						path.addLine(to: origin.applying(.init(translationX: cellSize, y: cellSize)))
 					}
 				}
 			}
@@ -410,25 +387,6 @@ struct ContentView: View {
 		case down = 9
 		case left = -1
 		case right = 1
-	}
-
-	func neighbours(of cell: Int, in openCells: inout Set<Int>, neighbours: inout [Int]) {
-		var nextCells: [Int] = []
-
-		Direction.allCases.forEach { diff in
-			let neighbour = cell + diff.rawValue
-
-			if openCells.contains(neighbour) {
-				openCells.remove(neighbour)
-				nextCells.append(neighbour)
-			}
-		}
-
-		for cell in nextCells {
-			self.neighbours(of: cell, in: &openCells, neighbours: &neighbours)
-		}
-
-		neighbours.append(contentsOf: nextCells)
 	}
 }
 
