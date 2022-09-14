@@ -1,53 +1,23 @@
 import SwiftUI
+import ComposableArchitecture
 
-struct ContentView: View {
-	@State var selectedCells: Set<Int> = []
+struct GameView: View {
+	let store: StoreOf<GameCore>
+	@ObservedObject var viewStore: ViewStoreOf<GameCore>
 
-	@State var coloredCells: [Int: Color] = [:]
-
-	let fixedNumbers: [Int: Int] = [
-		2: 8,
-		17: 4,
-	]
-
-	@State var bigNumbers: [Int: Int] = [:]
-
-	@State var centerNumbers: [Int: [Int]] = [:]
-
-	let fillColors = [Color.red, .yellow, .blue, .green]
-		.map { $0.opacity(0.4) }
-
-	enum EntryMode: String, CaseIterable {
-		case big = "Big"
-		case center = "Center"
+	init(store: StoreOf<GameCore>) {
+		self.store = store
+		viewStore = ViewStore(store)
 	}
-
-	@State var entryMode: EntryMode = .big
-
-	enum SelectionMode: String, CaseIterable {
-		case single = "Single"
-		case multiple = "Multiple"
-	}
-
-	@State var selectionMode: SelectionMode = .single
-
-	enum TouchMode: String {
-		case tap = "Tap"
-		case drag = "Drag"
-	}
-
-	@State var touchMode: TouchMode = .tap
-
-	enum DragUpdate: String {
-		case addition = "Add"
-		case remove = "Remove"
-	}
-
-	@State var dragUpdate: DragUpdate? = nil
-	@State var previousDraggedCell: Int? = nil
 
 	let gridSize: CGFloat = UIScreen.main.bounds.width - 20
 	var cellSize: CGFloat { gridSize / 9 }
+	var gridRect: CGRect {
+		CGRect(
+			origin: .zero,
+			size: CGSize(width: gridSize, height: gridSize)
+		)
+	}
 
 	var body: some View {
 		VStack {
@@ -61,17 +31,17 @@ struct ContentView: View {
 
 					context.fill(Path(roundedRect: rect, cornerSize: .zero), with: .color(.white))
 
-					coloredCells.forEach { cell, color in
+					viewStore.coloredCells.forEach { cell, color in
 						let cellPath = Path(CGRect(
 							origin: pointForCell(cell: cell),
 							size: CGSize(width: cellSize, height: cellSize)
 						))
 
-						context.fill(cellPath, with: .color(color))
+						context.fill(cellPath, with: .color(color.color))
 					}
 
 					context.stroke(
-						pathFor(cells: selectedCells),
+						pathFor(cells: viewStore.selectedCells),
 						with: .color(.purple.opacity(0.5)),
 						lineWidth: 6
 					)
@@ -126,7 +96,7 @@ struct ContentView: View {
 
 					context.stroke(cellPath, with: .color(Color(white: 0.2)), lineWidth: 0.5)
 
-					fixedNumbers.forEach { cell, value in
+					viewStore.fixedNumbers.forEach { cell, value in
 						let point = pointForCell(cell: cell)
 							.applying(.init(translationX: cellSize * 0.5, y: cellSize * 0.5))
 
@@ -139,9 +109,9 @@ struct ContentView: View {
 						)
 					}
 
-					bigNumbers
+					viewStore.bigNumbers
 						.filter { cell, _ in
-							!fixedNumbers.keys.contains(cell)
+							!viewStore.fixedNumbers.keys.contains(cell)
 						}
 						.forEach { cell, value in
 							let point = pointForCell(cell: cell)
@@ -154,10 +124,10 @@ struct ContentView: View {
 							)
 						}
 
-					centerNumbers
+					viewStore.centerNumbers
 						.filter { cell, _ in
-							!bigNumbers.keys.contains(cell) &&
-							!fixedNumbers.keys.contains(cell)
+							!viewStore.bigNumbers.keys.contains(cell) &&
+							!viewStore.fixedNumbers.keys.contains(cell)
 						}
 						.forEach { cell, values in
 							let point = pointForCell(cell: cell)
@@ -175,21 +145,11 @@ struct ContentView: View {
 				.background(Color.white)
 
 			HStack {
-				ForEach(fillColors, id: \.self) { color in
+				ForEach(FillColor.allCases, id: \.self) { color in
 					Button {
-						let allColored = selectedCells.allSatisfy { cell in
-							coloredCells[cell] == color
-						}
-
-						selectedCells.forEach { cell in
-							if allColored {
-								coloredCells[cell] = nil
-							} else {
-								coloredCells[cell] = color
-							}
-						}
+						viewStore.send(.colorTapped(color))
 					} label: {
-						color.frame(width: 44, height: 44)
+						color.color.frame(width: 44, height: 44)
 							.continuousCornerRadius(8)
 					}
 				}
@@ -198,11 +158,11 @@ struct ContentView: View {
 			HStack {
 				ForEach(SelectionMode.allCases, id: \.self) { value in
 					Button {
-						selectionMode = value
+						viewStore.send(.selectionModeTapped(value))
 					} label: {
 						Text(value.rawValue)
 							.padding(10)
-							.background(selectionMode == value ? Color.green : .gray)
+							.background(viewStore.selectionMode == value ? Color.green : .gray)
 							.continuousCornerRadius(8)
 							.foregroundColor(.white)
 					}
@@ -210,17 +170,17 @@ struct ContentView: View {
 			}
 
 			Button("Clear selection") {
-				selectedCells = []
+				viewStore.send(.clearSelectionTapped)
 			}
 
 			HStack {
 				ForEach(EntryMode.allCases, id: \.self) { value in
 					Button {
-						entryMode = value
+						viewStore.send(.entryModeTapped(value))
 					} label: {
 						Text(value.rawValue)
 							.padding(10)
-							.background(entryMode == value ? Color.green : .gray)
+							.background(viewStore.entryMode == value ? Color.green : .gray)
 							.continuousCornerRadius(8)
 							.foregroundColor(.white)
 					}
@@ -230,28 +190,7 @@ struct ContentView: View {
 			HStack {
 				ForEach(1..<10) { value in
 					Button {
-						selectedCells.forEach { cell in
-							guard fixedNumbers[cell] == nil else {
-								return
-							}
-
-							switch entryMode {
-							case .big:
-								if bigNumbers[cell] == value {
-									bigNumbers[cell] = nil
-								} else {
-									bigNumbers[cell] = value
-								}
-							case .center:
-								var values = Set(centerNumbers[cell] ?? [])
-								if values.contains(value) {
-									values.remove(value)
-								} else {
-									values.insert(value)
-								}
-								centerNumbers[cell] = values.sorted()
-							}
-						}
+						viewStore.send(.numberTapped(value))
 					} label: {
 						Text("\(value)")
 							.frame(width: 35, height: 35)
@@ -263,7 +202,7 @@ struct ContentView: View {
 				}
 			}
 
-			Text(touchMode.rawValue)
+			Text(viewStore.touchMode.rawValue)
 		}
 	}
 
@@ -271,54 +210,22 @@ struct ContentView: View {
 		ExclusiveGesture(
 			DragGesture(minimumDistance: 3)
 				.onChanged { value in
-					touchMode = .drag
-
-					let cell = cellForPoint(point: value.location)
-
-					if cell == previousDraggedCell {
+					guard gridRect.contains(value.location) else {
 						return
 					}
-
-					previousDraggedCell = cell
-
-					if dragUpdate == nil {
-						dragUpdate = selectedCells.contains(cell) ? .remove : .addition
-					}
-
-					switch dragUpdate {
-					case .remove:
-						selectedCells.remove(cell)
-					case .addition:
-						selectedCells.insert(cell)
-					case nil:
-						break
-					}
+					let cell = cellForPoint(point: value.location)
+					viewStore.send(.cellDragged(cell))
 				}
 				.onEnded { _ in
-					dragUpdate = nil
+					viewStore.send(.dragEnded)
 				},
 			SpatialTapGesture()
 				.onEnded { value in
-					touchMode = .tap
-					if (
-						value.location.x < 0 || gridSize < value.location.x ||
-						value.location.y < 0 || gridSize < value.location.y
-					) {
+					guard gridRect.contains(value.location) else {
 						return
 					}
-
 					let cell = cellForPoint(point: value.location)
-
-					switch selectionMode {
-					case .single:
-						selectedCells = [cell]
-					case .multiple:
-						if selectedCells.contains(cell) {
-							selectedCells.remove(cell)
-						} else {
-							selectedCells.insert(cell)
-						}
-					}
+					viewStore.send(.cellTapped(cell))
 				}
 		)
 	}
@@ -372,17 +279,26 @@ struct ContentView: View {
 
 		return path
 	}
+}
 
-	enum Direction: Int, CaseIterable {
-		case up = -9
-		case down = 9
-		case left = -1
-		case right = 1
+struct GameView_Previews: PreviewProvider {
+	static var previews: some View {
+		GameView(
+			store: .init(
+				initialState: .init(),
+				reducer: GameCore()
+			)
+		)
 	}
 }
 
-struct ContentView_Previews: PreviewProvider {
-	static var previews: some View {
-		ContentView()
+extension FillColor {
+	var color: Color {
+		switch self {
+		case .red: return .red.opacity(0.4)
+		case .yellow: return .yellow.opacity(0.4)
+		case .blue: return .blue.opacity(0.4)
+		case .green: return .green.opacity(0.4)
+		}
 	}
 }

@@ -8,17 +8,23 @@
 
 /* Begin PBXBuildFile section */
 		F62ACA2128D09F9E004D7CA8 /* ContinuousCornerRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = F62ACA2028D09F9E004D7CA8 /* ContinuousCornerRadius.swift */; };
+		F65D915C28D2022100B8ED7F /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = F65D915B28D2022100B8ED7F /* ComposableArchitecture */; };
+		F65D915E28D2022100B8ED7F /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = F65D915D28D2022100B8ED7F /* Dependencies */; };
+		F65D916128D2024700B8ED7F /* GameCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65D916028D2024700B8ED7F /* GameCore.swift */; };
+		F65D916328D205FF00B8ED7F /* SomeStuff.swift in Sources */ = {isa = PBXBuildFile; fileRef = F65D916228D205FF00B8ED7F /* SomeStuff.swift */; };
 		F6EE770F28CF79C700898A20 /* SudokuApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EE770E28CF79C700898A20 /* SudokuApp.swift */; };
-		F6EE771128CF79C700898A20 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EE771028CF79C700898A20 /* ContentView.swift */; };
+		F6EE771128CF79C700898A20 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6EE771028CF79C700898A20 /* GameView.swift */; };
 		F6EE771328CF79C800898A20 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6EE771228CF79C800898A20 /* Assets.xcassets */; };
 		F6EE771728CF79C800898A20 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6EE771628CF79C800898A20 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		F62ACA2028D09F9E004D7CA8 /* ContinuousCornerRadius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinuousCornerRadius.swift; sourceTree = "<group>"; };
+		F65D916028D2024700B8ED7F /* GameCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCore.swift; sourceTree = "<group>"; };
+		F65D916228D205FF00B8ED7F /* SomeStuff.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SomeStuff.swift; sourceTree = "<group>"; };
 		F6EE770B28CF79C700898A20 /* Sudoku.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sudoku.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6EE770E28CF79C700898A20 /* SudokuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SudokuApp.swift; sourceTree = "<group>"; };
-		F6EE771028CF79C700898A20 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F6EE771028CF79C700898A20 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		F6EE771228CF79C800898A20 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F6EE771428CF79C800898A20 /* Sudoku.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sudoku.entitlements; sourceTree = "<group>"; };
 		F6EE771628CF79C800898A20 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -29,12 +35,24 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F65D915C28D2022100B8ED7F /* ComposableArchitecture in Frameworks */,
+				F65D915E28D2022100B8ED7F /* Dependencies in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F65D915F28D2023400B8ED7F /* GameCore */ = {
+			isa = PBXGroup;
+			children = (
+				F6EE771028CF79C700898A20 /* GameView.swift */,
+				F65D916028D2024700B8ED7F /* GameCore.swift */,
+				F65D916228D205FF00B8ED7F /* SomeStuff.swift */,
+			);
+			path = GameCore;
+			sourceTree = "<group>";
+		};
 		F6EE770228CF79C700898A20 = {
 			isa = PBXGroup;
 			children = (
@@ -54,8 +72,8 @@
 		F6EE770D28CF79C700898A20 /* Sudoku */ = {
 			isa = PBXGroup;
 			children = (
+				F65D915F28D2023400B8ED7F /* GameCore */,
 				F6EE770E28CF79C700898A20 /* SudokuApp.swift */,
-				F6EE771028CF79C700898A20 /* ContentView.swift */,
 				F6EE771228CF79C800898A20 /* Assets.xcassets */,
 				F6EE771428CF79C800898A20 /* Sudoku.entitlements */,
 				F6EE771528CF79C800898A20 /* Preview Content */,
@@ -88,6 +106,10 @@
 			dependencies = (
 			);
 			name = Sudoku;
+			packageProductDependencies = (
+				F65D915B28D2022100B8ED7F /* ComposableArchitecture */,
+				F65D915D28D2022100B8ED7F /* Dependencies */,
+			);
 			productName = Sudoku;
 			productReference = F6EE770B28CF79C700898A20 /* Sudoku.app */;
 			productType = "com.apple.product-type.application";
@@ -116,6 +138,9 @@
 				Base,
 			);
 			mainGroup = F6EE770228CF79C700898A20;
+			packageReferences = (
+				F65D915A28D2022100B8ED7F /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+			);
 			productRefGroup = F6EE770C28CF79C700898A20 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -142,9 +167,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F6EE771128CF79C700898A20 /* ContentView.swift in Sources */,
+				F65D916128D2024700B8ED7F /* GameCore.swift in Sources */,
+				F6EE771128CF79C700898A20 /* GameView.swift in Sources */,
 				F62ACA2128D09F9E004D7CA8 /* ContinuousCornerRadius.swift in Sources */,
 				F6EE770F28CF79C700898A20 /* SudokuApp.swift in Sources */,
+				F65D916328D205FF00B8ED7F /* SomeStuff.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -362,6 +389,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F65D915A28D2022100B8ED7F /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
+			requirement = {
+				branch = "protocol-beta";
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F65D915B28D2022100B8ED7F /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F65D915A28D2022100B8ED7F /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
+		};
+		F65D915D28D2022100B8ED7F /* Dependencies */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F65D915A28D2022100B8ED7F /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = Dependencies;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F6EE770328CF79C700898A20 /* Project object */;
 }

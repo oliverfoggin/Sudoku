@@ -1,18 +1,17 @@
-//
-//  SudokuApp.swift
-//  Sudoku
-//
-//  Created by Oliver Foggin on 12/09/2022.
-//
-
 import SwiftUI
+import ComposableArchitecture
 
 @main
 struct SudokuApp: App {
 	var body: some Scene {
 		WindowGroup {
-			ContentView()
-				.preferredColorScheme(.light)
+			GameView(
+				store: .init(
+					initialState: .init(),
+					reducer: GameCore()
+				)
+			)
+			.preferredColorScheme(.light)
 		}
 	}
 }
