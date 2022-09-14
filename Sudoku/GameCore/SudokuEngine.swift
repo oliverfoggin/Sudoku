@@ -35,11 +35,10 @@ struct SudokuEngine {
 	]
 
 	static func visibleCells(from cell: Int) -> Set<Int> {
-		groups.filter { $0.contains(cell) }
-			.flatMap { $0 }
-			.filter { $0 != cell }
-			.reduce(into: []) { partialResult, i in
-				partialResult.insert(i)
-			}
+		Set(
+			groups.filter { $0.contains(cell) }
+				.flatMap { $0 }
+				.filter { $0 != cell }
+		)
 	}
 }
