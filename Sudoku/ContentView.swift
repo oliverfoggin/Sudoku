@@ -1,30 +1,21 @@
 import SwiftUI
 
 struct ContentView: View {
-	@State var selectedCells: Set<Int> = [10, 16, 19, 25]
+	@State var selectedCells: Set<Int> = []
 
-	@State var coloredCells: [Int: Color] = [
-		15 : .red,
-		13 : .yellow,
-		1 : .green,
-		72 : .blue,
-	]
+	@State var coloredCells: [Int: Color] = [:]
 
 	let fixedNumbers: [Int: Int] = [
 		2: 8,
 		17: 4,
 	]
 
-	@State var bigNumbers: [Int: Int] = [
-		0: 9,
-		52: 1,
-		38: 8,
-	]
+	@State var bigNumbers: [Int: Int] = [:]
 
-	@State var centerNumbers: [Int: [Int]] = [
-		0: [1,2,3,4],
-		4: [1,4,5],
-	]
+	@State var centerNumbers: [Int: [Int]] = [:]
+
+	let fillColors = [Color.red, .yellow, .blue, .green]
+		.map { $0.opacity(0.4) }
 
 	enum EntryMode: String, CaseIterable {
 		case big = "Big"
@@ -76,7 +67,7 @@ struct ContentView: View {
 							size: CGSize(width: cellSize, height: cellSize)
 						))
 
-						context.fill(cellPath, with: .color(color.opacity(0.7)))
+						context.fill(cellPath, with: .color(color))
 					}
 
 					context.stroke(
@@ -184,7 +175,7 @@ struct ContentView: View {
 				.background(Color.white)
 
 			HStack {
-				ForEach([Color.red, .yellow, .blue, .green], id: \.self) { color in
+				ForEach(fillColors, id: \.self) { color in
 					Button {
 						let allColored = selectedCells.allSatisfy { cell in
 							coloredCells[cell] == color
