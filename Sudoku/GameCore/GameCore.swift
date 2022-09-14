@@ -8,7 +8,7 @@ struct GameCore: ReducerProtocol {
 		var selectedCells: Set<Int> = []
 		var coloredCells: [Int: FillColor] = [:]
 		var bigNumbers: [Int: Int] = [:]
-		var centerNumbers: [Int: [Int]] = [:]
+		var centerNumbers: [Int: Set<Int>] = [:]
 		var entryMode: EntryMode = .big
 		var selectionMode: SelectionMode = .single
 		var touchMode: TouchMode = .tap
@@ -117,15 +117,20 @@ struct GameCore: ReducerProtocol {
 								state.bigNumbers[cell] = nil
 							} else {
 								state.bigNumbers[cell] = value
+
+								state.visibleCells(from: cell)
+									.forEach {
+										state.centerNumbers[$0]?.remove(value)
+									}
 							}
 						case .center:
-							var values = Set(state.centerNumbers[cell] ?? [])
+							var values = state.centerNumbers[cell] ?? []
 							if allCenterNumber {
 								values.remove(value)
 							} else {
 								values.insert(value)
 							}
-							state.centerNumbers[cell] = values.sorted()
+							state.centerNumbers[cell] = values
 						}
 					}
 				return .none

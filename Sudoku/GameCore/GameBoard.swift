@@ -140,7 +140,7 @@ struct GameBoard: View {
 							.applying(.init(translationX: cellSize * 0.5, y: cellSize * 0.5))
 
 						context.draw(
-							Text(values.map(String.init).joined())
+							Text(values.sorted().map(String.init).joined())
 								.font(.caption),
 							at: point
 						)
