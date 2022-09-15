@@ -73,6 +73,10 @@ struct GameView: View {
 			}
 
 			Text(viewStore.touchMode.rawValue)
+
+			Button("Delete") {
+				viewStore.send(.deleteTapped)
+			}
 		}
 	}
 }

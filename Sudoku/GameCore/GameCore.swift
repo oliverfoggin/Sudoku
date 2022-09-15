@@ -45,6 +45,7 @@ struct GameCore: ReducerProtocol {
 		case clearSelectionTapped
 		case entryModeTapped(EntryMode)
 		case numberTapped(Int)
+		case deleteTapped
 
 		case cellTapped(Int)
 		case cellDragged(Int)
@@ -113,6 +114,30 @@ struct GameCore: ReducerProtocol {
 
 			case .clearSelectionTapped:
 				state.boardState.selectedCells = []
+				return .none
+
+			case .deleteTapped:
+				let allBigNumber = state.boardState.selectedCells.allSatisfy { cell in
+					state.boardState.finalNumbers[cell] != nil
+				}
+				let hasBigNumbers = state.boardState.selectedCells.contains { cell in
+					state.boardState.bigNumbers[cell] != nil
+				}
+
+				switch state.entryMode {
+				case _ where allBigNumber:
+					state.boardState.selectedCells.forEach { cell in
+						state.boardState.bigNumbers[cell] = nil
+					}
+				case .big where hasBigNumbers:
+					state.boardState.selectedCells.forEach { cell in
+						state.boardState.bigNumbers[cell] = nil
+					}
+				case .big, .center:
+					state.boardState.selectedCells.forEach { cell in
+						state.boardState.centerNumbers[cell] = nil
+					}
+				}
 				return .none
 
 			case .cellTapped(let cell):
