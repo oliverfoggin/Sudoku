@@ -78,17 +78,20 @@ struct GameView: View {
 				viewStore.send(.deleteTapped)
 			}
 		}
+		.navigationTitle("Game")
 	}
 }
 
 struct GameView_Previews: PreviewProvider {
 	static var previews: some View {
-		GameView(
-			store: .init(
-				initialState: .init(),
-				reducer: GameCore()
+		NavigationStack {
+			GameView(
+				store: .init(
+					initialState: .init(),
+					reducer: GameCore()
+				)
 			)
-		)
+		}
 	}
 }
 

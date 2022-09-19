@@ -5,10 +5,11 @@ import ComposableArchitecture
 struct SudokuApp: App {
 	var body: some Scene {
 		WindowGroup {
-			GameView(
+			StartScreen(
 				store: .init(
 					initialState: .init(),
-					reducer: GameCore()
+					reducer: StartMenu()
+						.debug()
 				)
 			)
 			.preferredColorScheme(.light)
